@@ -20,19 +20,28 @@
 -(instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        [self setAppearance];
         self.time = 1.0/(60.0*1.0);
-        
-        [self setBackgroundColor:[UIColor whiteColor]];
-        [self.layer setShadowColor:[UIColor colorWithRed:0 green:0.7 blue:1 alpha:0.25].CGColor];
-        [self.layer setShadowRadius:4.0f];
-        [self.layer setShadowOpacity:1.0f];
-        [self.layer setShadowOffset:CGSizeMake(0, 0)];
-        [self.layer setCornerRadius:8.0f];
         self.pattern = 1;
         self.colors = [NSMutableArray arrayWithObjects:[UIColor colorDefaultBlack], [UIColor colorDefaultBlack], [UIColor colorDefaultBlack], nil];
         self.layers = [NSMutableArray arrayWithObjects:[self createNewLayer], [self createNewLayer], [self createNewLayer], nil];
     }
     return self;
+}
+
+-(void)awakeFromNib {
+    [super awakeFromNib];
+    [self setAppearance];
+}
+
+-(void)setAppearance {
+    [self setBackgroundColor:[UIColor whiteColor]];
+    [self.layer setShadowRadius:4.0];
+    [self.layer setShadowOpacity:1.0];
+    [self.layer setShadowOffset:CGSizeZero];
+    [self.layer setCornerRadius:8.0];
+    [self.layer setBorderColor:[UIColor colorChillSky].CGColor];
+    [self.layer setShadowColor:[UIColor colorChillSky].CGColor];
 }
 
 -(void)setCurrentLayers:(int)pattern {
