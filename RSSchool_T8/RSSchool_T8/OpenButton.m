@@ -52,4 +52,19 @@
     
 }
 
+- (void) setSelected:(BOOL)selected{
+    [super setSelected:selected];
+    
+    if (selected){
+        self.layer.borderColor = [UIColor colorLightGreenSea].CGColor;
+        self.layer.shadowColor = [UIColor colorLightGreenSea].CGColor;
+        self.layer.shadowRadius = 4.0;
+    }
+    else {
+        self.layer.borderColor =  [UIColor colorPale].CGColor;
+        self.layer.shadowColor = [UIColor colorPale].CGColor;
+        self.layer.shadowRadius = 2.0;
+    }
+}
+
 @end

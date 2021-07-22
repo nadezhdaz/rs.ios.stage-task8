@@ -12,11 +12,22 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol TimerViewControllerDelegate
 
 @optional
-- (void)setTime:(float) time;
+- (void)setTimeForTimer:(float) time;
+
+@end
+
+@protocol DrawingViewControllerDelegate
+
+@optional
+- (void)setImagePattern:(int)pattern;
 
 @end
 
 @interface CanvasViewController : UIViewController <UIViewControllerTransitioningDelegate>
+
+@property (assign, nonatomic) float time;
+@property (assign, nonatomic) int pattern;
+@property (strong, nonatomic) NSMutableArray <UIColor *> *colors;
 
 @end
 

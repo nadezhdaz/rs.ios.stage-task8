@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CanvasViewController">
             <connections>
+                <outlet property="canvasView" destination="V5T-P3-ZIQ" id="6Nk-eK-Lue"/>
                 <outlet property="drawButton" destination="dey-YH-hBi" id="Efv-Y9-Q67"/>
                 <outlet property="paletteButton" destination="qg3-Pv-YJk" id="h7I-Cb-TVk"/>
                 <outlet property="shareButton" destination="BFE-ti-4W9" id="WQJ-v4-Da3"/>

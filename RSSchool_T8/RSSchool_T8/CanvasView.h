@@ -17,23 +17,22 @@ typedef NS_ENUM(NSUInteger, DrawingPattern) {
     landscape
 };
 
-@protocol CanvasViewDelegate <NSObject>
+@protocol CanvasViewDelegate
 
+@optional
 -(void)screenStateDone;
+//-(void)setColors;
 
 @end
 
 @interface CanvasView : UIView
 
 @property (weak, nonatomic, nullable) id<CanvasViewDelegate> delegate;
-@property (assign, nonatomic) DrawingPattern *drawingPattern;
 @property (assign, nonatomic) float time;
-@property (strong, nonatomic) NSMutableArray <UIColor *> *colors;
 @property (strong, nonatomic) NSArray<CAShapeLayer*> *layers;
-@property (assign, nonatomic) int pattern;
 @property (strong, nonatomic, nullable) NSTimer *timer;
 
--(void)drawPattern;
+-(void)drawPattern:(int)pattern time:(float)time colors:(NSMutableArray <UIColor *> *)colors ;
 
 @end
 

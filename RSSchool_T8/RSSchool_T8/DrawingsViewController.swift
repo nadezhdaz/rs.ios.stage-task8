@@ -13,41 +13,44 @@ class DrawingsViewController: UIViewController {
     @IBOutlet weak var treeButton: OpenButton!
     @IBOutlet weak var landscapeButton: OpenButton!
     
-    var selectedButton: UIButton?
-    @objc var canvasView: CanvasView = CanvasView();
+    var selectedButton: OpenButton?
+    //var buttonsDictionary: Dictionary<Int, OpenButton>
+    
+    @objc var delegate: DrawingViewControllerDelegate?
     
     override func viewDidLoad() {
-        super.viewDidLoad();
-        self.selectedButton = headButton
+        super.viewDidLoad()
+        self.selectedButton?.isSelected = true
         self.view.backgroundColor = UIColor.white;
         self.setup();
+        //self.buttonsDictionary = [0:planetButton, 1:headButton, 2:treeButton, 3:landscapeButton]
     }
     
     func setup() {
         self.navigationItem.title = "Drawings";
     }
     
-    @IBAction func planetButtonTapped(_ sender: Any) {
-        self.selectedButton = planetButton
-        self.canvasView.pattern = 0
+    @IBAction func planetButtonTapped(_ sender: OpenButton) {
+        self.selectedButton = sender
+        self.delegate?.setImagePattern?(0)
         self.navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func headButtonTapped(_ sender: Any) {
-        self.selectedButton = planetButton
-        self.canvasView.pattern = 1
+    @IBAction func headButtonTapped(_ sender: OpenButton) {
+        self.selectedButton = sender
+        self.delegate?.setImagePattern?(1)
         self.navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func treeButtonTapped(_ sender: Any) {
-        self.selectedButton = planetButton
-        self.canvasView.pattern = 2
+    @IBAction func treeButtonTapped(_ sender: OpenButton) {
+        self.selectedButton = sender
+        self.delegate?.setImagePattern?(2)
         self.navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func landscapeButtonTapped(_ sender: Any) {
-        self.selectedButton = planetButton
-        self.canvasView.pattern = 3
+    @IBAction func landscapeButtonTapped(_ sender: OpenButton) {
+        self.selectedButton = sender
+        self.delegate?.setImagePattern?(3)
         self.navigationController?.popViewController(animated: true)
     }
 }

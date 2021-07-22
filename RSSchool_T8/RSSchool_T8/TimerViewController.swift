@@ -15,7 +15,6 @@ class TimerViewController: UIViewController {
     var currentValueLabel = UILabel(frame: CGRect(x: 162, y: 161, width: 54, height: 22));
     
     @objc var timer = Timer();
-    @objc var canvasView: CanvasView = CanvasView();
     @objc var delegate: TimerViewControllerDelegate?
     
     override func viewDidLoad() {
@@ -68,7 +67,7 @@ class TimerViewController: UIViewController {
     }
     
     @objc func saveButtonTapped() {
-        delegate?.setTime?(currentValue)
+        delegate?.setTimeForTimer?(currentValue)
         self.willMove(toParent: nil)
         self.view.removeFromSuperview()
         self.removeFromParent()
@@ -78,6 +77,5 @@ class TimerViewController: UIViewController {
         currentValueLabel.font = UIFont(name: "Montserrat-Regular", size: 18.0);
         currentValueLabel.text = String(format: "%.02f s", sender.value);
         currentValueLabel.textAlignment = .center;
-        self.canvasView.time = 1.0/(60.0 * sender.value);
     }
 }

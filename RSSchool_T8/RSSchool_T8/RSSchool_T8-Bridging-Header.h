@@ -6,4 +6,3 @@
 #import "UIColor+AppColors.h"
 #import "PaletteViewController.h"
 #import "CanvasViewController.h"
-#import "CanvasView.h"

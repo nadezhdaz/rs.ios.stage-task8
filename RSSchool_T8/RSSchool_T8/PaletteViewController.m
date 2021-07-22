@@ -14,7 +14,7 @@
 
 @property (nonatomic, strong) NSMutableArray<ColorButton*> * colorsToDrawArray;
 @property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, strong) CanvasView *canvasView;
+//@property (nonatomic, weak) CanvasView *canvasView;
 
 @end
 
@@ -25,7 +25,7 @@
     [self setupButtons];
     [self setupView];
     self.colorsToDrawArray = [NSMutableArray new];
-    self.canvasView = [CanvasView new];
+    //self.canvasView = [CanvasView new];
 }
 - (IBAction)saveButtonTapped:(id)sender {
     [self setColorsArrayToCanvasView];
@@ -35,12 +35,37 @@
 }
 
 -(void)setColorsArrayToCanvasView {
+    NSMutableArray *arrayWithcolors = [NSMutableArray new];
     for (ColorButton * button in self.colorsToDrawArray) {
-        [self.canvasView.colors addObject:button.colorSubview.backgroundColor];
+        [arrayWithcolors addObject:button.colorSubview.backgroundColor];
     }
-    while (self.canvasView.colors.count < 3) {
-        [self.canvasView.colors addObject:[UIColor colorDefaultBlack]];
+    while (arrayWithcolors.count < 3) {
+        [arrayWithcolors addObject:[UIColor colorDefaultBlack]];
     }
+    
+    [self.delegate setColorsArray:arrayWithcolors];
+}
+
+- (void)tapColor:(ColorButton *)sender {
+    if ([self.colorsToDrawArray containsObject:sender]) {
+        [self.colorsToDrawArray removeObject:sender];
+        [self.view setBackgroundColor:[UIColor whiteColor]];
+    } else {
+        [self.colorsToDrawArray addObject:sender];
+        [self.view setBackgroundColor:sender.colorSubview.backgroundColor];        
+        if (self.timer.isValid) {
+            [self.timer invalidate];
+        }
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(setDefaultBackgroundColor) userInfo:nil repeats:NO];
+    }
+    if (self.colorsToDrawArray.count > 3) {
+        [self.colorsToDrawArray.firstObject setDefaultFrame];
+        [self.colorsToDrawArray removeObjectAtIndex:0];
+    }
+}
+
+- (void)setDefaultBackgroundColor {
+    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)setupView {
@@ -92,28 +117,5 @@
     [self.view addSubview:buttonDarkGreen];
     [self.view addSubview:buttonBrown];
 }
-
-- (void)tapColor:(ColorButton *)sender {
-    if ([self.colorsToDrawArray containsObject:sender]) {
-        [self.colorsToDrawArray removeObject:sender];
-        [self.view setBackgroundColor:[UIColor whiteColor]];
-    } else {
-        [self.colorsToDrawArray addObject:sender];
-        [self.view setBackgroundColor:sender.colorSubview.backgroundColor];        
-        if (self.timer.isValid) {
-            [self.timer invalidate];
-        }
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(setDefaultBackgroundColor) userInfo:nil repeats:NO];
-    }
-    if (self.colorsToDrawArray.count > 3) {
-        [self.colorsToDrawArray.firstObject setDefaultFrame];
-        [self.colorsToDrawArray removeObjectAtIndex:0];
-    }
-}
-
-- (void)setDefaultBackgroundColor {
-    self.view.backgroundColor = [UIColor whiteColor];
-}
-
 
 @end

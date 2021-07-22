@@ -18,16 +18,20 @@ typedef enum {
     done,
 } ScreenState;
 
-@interface CanvasViewController () <TimerViewControllerDelegate, CanvasViewDelegate>
+@interface CanvasViewController () <TimerViewControllerDelegate, PaletteViewControllerDelegate, DrawingViewControllerDelegate, CanvasViewDelegate>
 
-@property (strong, nonatomic) CanvasView *canvasView;
+@property (weak, nonatomic) CanvasView *canvasView;
 @property (weak, nonatomic) IBOutlet OpenButton *paletteButton;
 @property (weak, nonatomic) IBOutlet OpenButton *timerButton;
 @property (weak, nonatomic) IBOutlet OpenButton *drawButton;
 @property (weak, nonatomic) IBOutlet OpenButton *shareButton;
-@property (weak, nonatomic) DrawingsViewController *drawingsViewController;
-@property (weak, nonatomic) PaletteViewController *paletteViewController;
-@property (weak, nonatomic) TimerViewController *timerViewController;
+@property (strong, nonatomic) DrawingsViewController *drawingsViewController;
+@property (strong, nonatomic) PaletteViewController *paletteViewController;
+@property (strong, nonatomic) TimerViewController *timerViewController;
+@property (weak, nonatomic, nullable) id<PaletteViewControllerDelegate> paletteDelegate;
+@property (weak, nonatomic, nullable) id<TimerViewControllerDelegate> timerDelegate;
+@property (weak, nonatomic, nullable) id<DrawingViewControllerDelegate> drawingDelegate;
+@property (weak, nonatomic, nullable) id<CanvasViewDelegate> canvasDelegate;
 
 @end
 
@@ -35,10 +39,13 @@ typedef enum {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(38, 40, 300, 300)];
+    //self.canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(38, 40, 300, 300)];
     [self.canvasView.layer setBorderColor:[UIColor colorChillSky].CGColor];
     [self.canvasView.layer setShadowColor:[UIColor colorChillSky].CGColor];
     self.canvasView.delegate = self;
+    self.pattern = 1;
+    self.time = 1.0/(60.0*1.0);
+    self.colors = [NSMutableArray arrayWithObjects:[UIColor colorDefaultBlack], [UIColor colorDefaultBlack], [UIColor colorDefaultBlack], nil];
     //self.canvasView.layer.borderColor = [UIColor colorChillSky].CGColor;
     
     [self setupCanvasView:self.canvasView];
@@ -55,13 +62,13 @@ typedef enum {
 
 - (IBAction)paletteButtonPressed:(id)sender {
     if (self.paletteViewController == nil) {
-        PaletteViewController *viewController = [PaletteViewController new];
-        self.paletteViewController = viewController;
-        [self addChildViewController:viewController];
-        [self.view addSubview:viewController.view];
-        viewController.view.frame = [self frameForChildController];
-        [viewController didMoveToParentViewController:self];
+        self.paletteViewController = [PaletteViewController new];;
+        self.paletteViewController.delegate = self;
     }
+    [self addChildViewController:self.paletteViewController];
+    [self.view addSubview:self.paletteViewController.view];
+    self.paletteViewController.view.frame = [self frameForChildController];
+    [self.paletteViewController didMoveToParentViewController:self];
 }
 
 //-(void)setupButtons {
@@ -73,20 +80,21 @@ typedef enum {
 
 - (IBAction)timerButtonPressed:(id)sender {
     if (self.timerViewController == nil) {
-        TimerViewController *viewController = [TimerViewController new];
-        self.timerViewController = viewController;
-        //self.timerViewController.delegate = self;
-        [self addChildViewController:viewController];
-        [self.view addSubview:viewController.view];
-        viewController.view.frame = [self frameForChildController];
-        [viewController didMoveToParentViewController:self];
+        self.timerViewController = [TimerViewController new];
+        self.timerViewController.delegate = self;
+        
     }
+    [self addChildViewController:self.timerViewController];
+    [self.view addSubview:self.timerViewController.view];
+    self.timerViewController.view.frame = [self frameForChildController];
+    [self.timerViewController didMoveToParentViewController:self];
 }
 - (IBAction)drawButtonPressed:(id)sender {
-    [self.canvasView drawPattern];
-    [self updateScreenState:draw];
     if ([self.drawButton.currentTitle isEqualToString:@"Reset"]) {
         [self updateScreenState:idle];
+    } else {
+        [self.canvasView drawPattern:self.pattern time:self.time colors:self.colors];
+        [self updateScreenState:draw];
     }
 }
 
@@ -124,10 +132,10 @@ typedef enum {
 
 - (void)nextTapped:(id)sender {
     if (self.drawingsViewController == nil) {
-        DrawingsViewController *viewController = [[DrawingsViewController alloc] initWithNibName:@"DrawingsViewController" bundle:nil];
-        self.drawingsViewController = viewController;
-        [self.navigationController pushViewController:self.drawingsViewController animated:YES];
+        self.drawingsViewController = [[DrawingsViewController alloc] initWithNibName:@"DrawingsViewController" bundle:nil];;
+        self.drawingsViewController.delegate = self;
     }
+    [self.navigationController pushViewController:self.drawingsViewController animated:YES];
 }
 
 - (void)backToRootTapped:(id)sender {
@@ -146,12 +154,17 @@ typedef enum {
             [self.drawButton setTitle:@"Draw" forState:UIControlStateNormal];
             self.shareButton.alpha = 0.5;
             [self.shareButton setUserInteractionEnabled:NO];
+            //self.canvasView
             break;
         case draw:
             [self.paletteButton setUserInteractionEnabled:NO];
+            self.paletteButton.alpha = 0.5;
             [self.timerButton setUserInteractionEnabled:NO];
+            self.timerButton.alpha = 0.5;
             [self.drawButton setUserInteractionEnabled:NO];
+            self.drawButton.alpha = 0.5;
             [self.shareButton setUserInteractionEnabled:NO];
+            self.shareButton.alpha = 0.5;
             break;
         case done:
             self.shareButton.alpha = 1.0;
@@ -174,6 +187,18 @@ typedef enum {
 
 - (void)screenStateDone {
     [self updateScreenState:done];
+}
+
+- (void)setColorsArray:(NSMutableArray<UIColor *> *)colors {
+    self.colors = colors;
+}
+
+- (void)setTimeForTimer:(float)time {
+    self.time = time;
+}
+
+- (void)setImagePattern:(int)pattern {
+    self.pattern = pattern;
 }
 
 @end

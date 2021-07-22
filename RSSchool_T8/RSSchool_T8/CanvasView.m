@@ -17,7 +17,7 @@
 
 @implementation CanvasView
 
--(instancetype)initWithFrame:(CGRect)frame {
+/*-(instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         [self setAppearance];
@@ -27,11 +27,15 @@
         self.layers = [NSMutableArray arrayWithObjects:[self createNewLayer], [self createNewLayer], [self createNewLayer], nil];
     }
     return self;
-}
+}*/
 
 -(void)awakeFromNib {
     [super awakeFromNib];
     [self setAppearance];
+    self.time = 1.0/(60.0 * 1.0);
+    //self.pattern = 1;
+    //self.colors = [NSMutableArray arrayWithObjects:[UIColor colorDefaultBlack], [UIColor colorDefaultBlack], [UIColor colorDefaultBlack], nil];
+    self.layers = [NSMutableArray arrayWithObjects:[self createNewLayer], [self createNewLayer], [self createNewLayer], nil];
 }
 
 -(void)setAppearance {
@@ -49,7 +53,7 @@
     //CAShapeLayer *self.layers[1] = [self createNewLayer];
     //CAShapeLayer *self.layers[2] = [self createNewLayer];
     
-    [self.colors shuffle];
+    
     
     switch (pattern) {
         case 0:
@@ -57,9 +61,6 @@
             self.layers[1].path = [DrawingPathStore drawPlanetCanvasSecondPath].CGPath;
             self.layers[2].path = [DrawingPathStore drawPlanetCanvasThirdPath].CGPath;
             self.layers[2].lineWidth = 1;
-            self.layers[0].strokeColor = self.colors[0].CGColor;
-            self.layers[1].strokeColor = self.colors[1].CGColor;
-            self.layers[2].strokeColor = self.colors[2].CGColor;
             break;
             
         case 1:
@@ -67,9 +68,6 @@
             self.layers[1].path = [DrawingPathStore drawHeadCanvasSecondPath].CGPath;
             self.layers[2].path = [DrawingPathStore drawHeadCanvasThirdPath].CGPath;
             self.layers[1].lineWidth = 1;
-            self.layers[0].strokeColor = self.colors[0].CGColor;
-            self.layers[1].strokeColor = self.colors[1].CGColor;
-            self.layers[2].strokeColor = self.colors[2].CGColor;
             break;
             
         case 2:
@@ -77,9 +75,6 @@
             self.layers[1].path = [DrawingPathStore drawTreeCanvasSecondPath].CGPath;
             self.layers[2].path = [DrawingPathStore drawTreeCanvasThirdPath].CGPath;
             self.layers[2].lineWidth = 0.5;
-            self.layers[0].strokeColor = self.colors[0].CGColor;
-            self.layers[1].strokeColor = self.colors[1].CGColor;
-            self.layers[2].strokeColor = self.colors[2].CGColor;
             break;
             
         case 3:
@@ -87,22 +82,24 @@
             self.layers[1].path = [DrawingPathStore drawLandscapeCanvasSecondPath].CGPath;
             self.layers[2].path = [DrawingPathStore drawLandscapeCanvasThirdPath].CGPath;
             self.layers[2].lineWidth = 0.5;
-            self.layers[0].strokeColor = self.colors[0].CGColor;
-            self.layers[1].strokeColor = self.colors[1].CGColor;
-            self.layers[2].strokeColor = self.colors[2].CGColor;
             break;
     }
     
 }
 
--(void)drawPattern {
-    [self drawPattern:self.pattern];
-}
 
--(void)drawPattern:(int)pattern {
+-(void)drawPattern:(int)pattern time:(float)time colors:(NSMutableArray <UIColor *> *)colors {
+    float interval = 1.0 / 60.0;
+    self.time = 1.0/(60.0 * time);
+    [colors shuffle];
+    
     [self setCurrentLayers:pattern];
     
-    self.timer = [NSTimer scheduledTimerWithTimeInterval: 0.01
+    self.layers[0].strokeColor = colors[0].CGColor;
+    self.layers[1].strokeColor = colors[1].CGColor;
+    self.layers[2].strokeColor = colors[2].CGColor;
+    
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.01
                                                   target:self
                                                 selector:@selector(updateTimer)
                                                 userInfo:nil
@@ -112,7 +109,7 @@
 
 -(void)updateTimer {
     CAShapeLayer *currentLayer = self.layers[0];
-    if (currentLayer.strokeEnd > 1){
+    if (currentLayer.strokeEnd >= 1){
         [self.timer invalidate];
         [self setTimer:nil];
         [self.delegate screenStateDone];
@@ -135,6 +132,7 @@
     [layer setFrame: self.bounds];
     layer.lineCap = kCALineCapRound;
     layer.lineJoin = kCALineJoinRound;
+    [self.layer addSublayer:layer];
     return layer;
 }
 
