@@ -29,41 +29,39 @@
     self.layer.cornerRadius = 10.0;
     [self setTitleColor:[UIColor colorLightGreenSea] forState:UIControlStateNormal];
     self.titleLabel.font = [UIFont fontWithName:@"Montserrat-Medium" size:18.0];
-    self.titleEdgeInsets = UIEdgeInsetsMake(0, 21.0, 0, 21.0);
+    self.titleEdgeInsets = UIEdgeInsetsMake(5.0, 21.0, 5.0, 21.0);
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.layer.masksToBounds = YES;
     self.clipsToBounds = NO;
     self.layer.shadowColor = [UIColor colorPale].CGColor;
     self.layer.shadowOffset = CGSizeZero;
-    self.layer.shadowRadius = 2;
+    self.layer.shadowRadius = 1.0;
     self.layer.shadowOpacity = 1.0;
 }
 
-- (void)setHighlighted:(BOOL)highlighted{
+- (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted: highlighted];
     
     if (highlighted) {
         self.layer.shadowColor = [UIColor colorLightGreenSea].CGColor;
-        self.layer.shadowRadius = 4;
+        self.layer.shadowRadius = 2;
     } else {
         self.layer.shadowColor = [UIColor colorPale].CGColor;
-        self.layer.shadowRadius = 2;
+        self.layer.shadowRadius = 1;
     }
     
 }
 
-- (void) setSelected:(BOOL)selected{
-    [super setSelected:selected];
-    
-    if (selected){
+- (void) setCurrentBorderForSelected: (BOOL)selected {
+    if (selected) {
         self.layer.borderColor = [UIColor colorLightGreenSea].CGColor;
         self.layer.shadowColor = [UIColor colorLightGreenSea].CGColor;
-        self.layer.shadowRadius = 4.0;
+        self.layer.shadowRadius = 2.0;
     }
     else {
         self.layer.borderColor =  [UIColor colorPale].CGColor;
         self.layer.shadowColor = [UIColor colorPale].CGColor;
-        self.layer.shadowRadius = 2.0;
+        self.layer.shadowRadius = 1.0;
     }
 }
 

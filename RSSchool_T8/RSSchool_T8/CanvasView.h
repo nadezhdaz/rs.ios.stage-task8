@@ -21,6 +21,7 @@ typedef NS_ENUM(NSUInteger, DrawingPattern) {
 
 @optional
 -(void)screenStateDone;
+-(CAShapeLayer *)clearLayers;
 //-(void)setColors;
 
 @end
@@ -28,11 +29,11 @@ typedef NS_ENUM(NSUInteger, DrawingPattern) {
 @interface CanvasView : UIView
 
 @property (weak, nonatomic, nullable) id<CanvasViewDelegate> delegate;
-@property (assign, nonatomic) float time;
+@property (assign, nonatomic) float currentStep;
 @property (strong, nonatomic) NSArray<CAShapeLayer*> *layers;
 @property (strong, nonatomic, nullable) NSTimer *timer;
 
--(void)drawPattern:(int)pattern time:(float)time colors:(NSMutableArray <UIColor *> *)colors ;
+-(void)drawPattern:(NSInteger)pattern time:(float)time colors:(NSMutableArray <UIColor *> *)colors ;
 
 @end
 

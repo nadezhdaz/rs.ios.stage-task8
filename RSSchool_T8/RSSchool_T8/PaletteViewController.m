@@ -41,26 +41,27 @@
     }
     while (arrayWithcolors.count < 3) {
         [arrayWithcolors addObject:[UIColor colorDefaultBlack]];
-    }
-    
+    }    
     [self.delegate setColorsArray:arrayWithcolors];
 }
 
 - (void)tapColor:(ColorButton *)sender {
     if ([self.colorsToDrawArray containsObject:sender]) {
         [self.colorsToDrawArray removeObject:sender];
+        
+        [sender setDefaultFrame];
         [self.view setBackgroundColor:[UIColor whiteColor]];
     } else {
+        if (self.colorsToDrawArray.count >= 3) {
+            [self.colorsToDrawArray.firstObject setDefaultFrame];
+            [self.colorsToDrawArray removeObjectAtIndex:0];
+        }
         [self.colorsToDrawArray addObject:sender];
         [self.view setBackgroundColor:sender.colorSubview.backgroundColor];        
         if (self.timer.isValid) {
             [self.timer invalidate];
         }
         self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(setDefaultBackgroundColor) userInfo:nil repeats:NO];
-    }
-    if (self.colorsToDrawArray.count > 3) {
-        [self.colorsToDrawArray.firstObject setDefaultFrame];
-        [self.colorsToDrawArray removeObjectAtIndex:0];
     }
 }
 
@@ -75,6 +76,7 @@
     self.view.layer.shadowRadius = 4.0;
     self.view.layer.shadowOpacity = 1.0;
     self.view.layer.shadowOffset = CGSizeZero;
+    self.view.layer.maskedCorners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
 }
 
 - (void)setupButtons {
@@ -103,6 +105,19 @@
     [buttonBlack addTarget:self action:@selector(tapColor:) forControlEvents:UIControlEventTouchUpInside];
     [buttonDarkGreen addTarget:self action:@selector(tapColor:) forControlEvents:UIControlEventTouchUpInside];
     [buttonBrown addTarget:self action:@selector(tapColor:) forControlEvents:UIControlEventTouchUpInside];
+    
+    buttonRed.colorName = @"red";
+    buttonBlue.colorName = @"blue";
+    buttonGreen.colorName = @"green";
+    buttonGray.colorName = @"gray";
+    buttonViolet.colorName = @"violet";
+    buttonPeach.colorName = @"peach";
+    buttonOrange.colorName = @"orange";
+    buttonLightBlue.colorName = @"light blue";
+    buttonPink.colorName = @"pink";
+    buttonBlack.colorName = @"black";
+    buttonDarkGreen.colorName = @"dark green";
+    buttonBrown.colorName = @"brown";
     
     [self.view addSubview:buttonRed];
     [self.view addSubview:buttonBlue];

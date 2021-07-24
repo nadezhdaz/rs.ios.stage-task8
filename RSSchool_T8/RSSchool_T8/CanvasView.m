@@ -17,25 +17,11 @@
 
 @implementation CanvasView
 
-/*-(instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self setAppearance];
-        self.time = 1.0/(60.0*1.0);
-        self.pattern = 1;
-        self.colors = [NSMutableArray arrayWithObjects:[UIColor colorDefaultBlack], [UIColor colorDefaultBlack], [UIColor colorDefaultBlack], nil];
-        self.layers = [NSMutableArray arrayWithObjects:[self createNewLayer], [self createNewLayer], [self createNewLayer], nil];
-    }
-    return self;
-}*/
-
 -(void)awakeFromNib {
     [super awakeFromNib];
     [self setAppearance];
-    self.time = 1.0/(60.0 * 1.0);
-    //self.pattern = 1;
-    //self.colors = [NSMutableArray arrayWithObjects:[UIColor colorDefaultBlack], [UIColor colorDefaultBlack], [UIColor colorDefaultBlack], nil];
-    self.layers = [NSMutableArray arrayWithObjects:[self createNewLayer], [self createNewLayer], [self createNewLayer], nil];
+    self.currentStep = 1.0/(60.0 * 1.0);
+    self.layers = [NSMutableArray new];
 }
 
 -(void)setAppearance {
@@ -48,12 +34,8 @@
     [self.layer setShadowColor:[UIColor colorChillSky].CGColor];
 }
 
--(void)setCurrentLayers:(int)pattern {
-    //CAShapeLayer *self.layers[0] = [self createNewLayer];
-    //CAShapeLayer *self.layers[1] = [self createNewLayer];
-    //CAShapeLayer *self.layers[2] = [self createNewLayer];
-    
-    
+-(void)setCurrentLayers:(NSInteger)pattern {
+    self.layers = [NSMutableArray arrayWithObjects:[self createNewLayer], [self createNewLayer], [self createNewLayer], nil];
     
     switch (pattern) {
         case 0:
@@ -88,18 +70,18 @@
 }
 
 
--(void)drawPattern:(int)pattern time:(float)time colors:(NSMutableArray <UIColor *> *)colors {
+-(void)drawPattern:(NSInteger)pattern time:(float)time colors:(NSMutableArray <UIColor *> *)colors {
     float interval = 1.0 / 60.0;
-    self.time = 1.0/(60.0 * time);
-    [colors shuffle];
     
+    self.currentStep = 1.0/(60.0 * time);
     [self setCurrentLayers:pattern];
     
+    [colors shuffle];
     self.layers[0].strokeColor = colors[0].CGColor;
     self.layers[1].strokeColor = colors[1].CGColor;
     self.layers[2].strokeColor = colors[2].CGColor;
     
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.01
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                   target:self
                                                 selector:@selector(updateTimer)
                                                 userInfo:nil
@@ -108,18 +90,19 @@
 }
 
 -(void)updateTimer {
-    CAShapeLayer *currentLayer = self.layers[0];
-    if (currentLayer.strokeEnd >= 1){
-        [self.timer invalidate];
-        [self setTimer:nil];
-        [self.delegate screenStateDone];
-        return;
-    }
-    if (currentLayer.strokeEnd < 1)  {
-        for (CAShapeLayer *layer in self.layers) {
-            layer.strokeEnd += self.time;
+    for (CAShapeLayer *layer in self.layers) {
+        layer.strokeEnd += self.currentStep;
+        
+        if (layer.strokeEnd > 1.0){
+            [self.timer invalidate];
+            [self setTimer:nil];
+            [self.delegate screenStateDone];
+            return;
         }
     }
+    
+    //CAShapeLayer *currentLayer = self.layers[0];
+    
 }
 
 -(CAShapeLayer *)createNewLayer {
@@ -132,6 +115,15 @@
     [layer setFrame: self.bounds];
     layer.lineCap = kCALineCapRound;
     layer.lineJoin = kCALineJoinRound;
+    [self.layer addSublayer:layer];
+    return layer;
+}
+
+-(CAShapeLayer *)clearLayers {
+    CAShapeLayer* layer = [CAShapeLayer layer];
+    [layer setFillColor: [UIColor clearColor].CGColor];
+    [layer setStrokeColor: [UIColor colorDefaultBlack].CGColor];
+    [layer setFrame: self.bounds];
     [self.layer addSublayer:layer];
     return layer;
 }

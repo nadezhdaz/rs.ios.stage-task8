@@ -21,9 +21,10 @@
 }
 
 - (void)setupButton{
+    
     [self.layer setCornerRadius:10.0];
-    [self.layer setShadowOffset:CGSizeMake(0, 0)];
-    [self.layer setShadowRadius:1.0];
+    [self.layer setShadowOffset:CGSizeZero];
+    [self.layer setShadowRadius:2.0];
     [self.layer setShadowOpacity:1.0];
     [self.layer setShadowColor:[UIColor colorPale].CGColor];
     [self addSubview:self.colorSubview];
@@ -32,9 +33,9 @@
 -(void)setupSubview:(UIColor *)color {
     self.colorSubview = [[UIView alloc] init];
     self.colorSubview.backgroundColor = color;
-    [self.colorSubview setFrame:CGRectMake(8, 8, 24, 24)];
-    [self.colorSubview.layer setCornerRadius:6.0];
+    self.colorName = @"test name";
     self.colorSubview.userInteractionEnabled = NO;
+    [self setDefaultFrame];
     [self addSubview:self.colorSubview];
 }
 
@@ -44,7 +45,7 @@
     if (highlighted) {
             [self.colorSubview setFrame:CGRectMake(2, 2, 36, 36)];
             [self.colorSubview.layer setCornerRadius:8.0];
-            self.superview.backgroundColor = self.colorSubview.backgroundColor;
+            //self.superview.backgroundColor = self.colorSubview.backgroundColor;
             [self layoutIfNeeded];
     }
 
@@ -53,7 +54,6 @@
 - (void)setDefaultFrame {
     [self.colorSubview setFrame:CGRectMake(8, 8, 24, 24)];
     [self.colorSubview.layer setCornerRadius:6.0];
-    [self layoutIfNeeded];
 }
 
 @end

@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setDefaultFrame;
 
 @property (strong, nonatomic) UIView * colorSubview;
+@property (strong, nonatomic) NSString * colorName;
 
 @end
 

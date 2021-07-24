@@ -18,15 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol DrawingViewControllerDelegate
 
+@property (assign, nonatomic) NSInteger pattern;
+
 @optional
-- (void)setImagePattern:(int)pattern;
+- (void)setImagePattern:(NSInteger)pattern;
+
+
 
 @end
 
 @interface CanvasViewController : UIViewController <UIViewControllerTransitioningDelegate>
 
 @property (assign, nonatomic) float time;
-@property (assign, nonatomic) int pattern;
+@property (assign, nonatomic) NSInteger drawingPattern;
 @property (strong, nonatomic) NSMutableArray <UIColor *> *colors;
 
 @end

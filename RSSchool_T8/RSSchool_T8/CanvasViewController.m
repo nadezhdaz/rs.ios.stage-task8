@@ -37,6 +37,8 @@ typedef enum {
 
 @implementation CanvasViewController
 
+@synthesize pattern;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     //self.canvasView = [[CanvasView alloc] initWithFrame:CGRectMake(38, 40, 300, 300)];
@@ -44,7 +46,7 @@ typedef enum {
     [self.canvasView.layer setShadowColor:[UIColor colorChillSky].CGColor];
     self.canvasView.delegate = self;
     self.pattern = 1;
-    self.time = 1.0/(60.0*1.0);
+    self.time = 1.0;
     self.colors = [NSMutableArray arrayWithObjects:[UIColor colorDefaultBlack], [UIColor colorDefaultBlack], [UIColor colorDefaultBlack], nil];
     //self.canvasView.layer.borderColor = [UIColor colorChillSky].CGColor;
     
@@ -71,13 +73,6 @@ typedef enum {
     [self.paletteViewController didMoveToParentViewController:self];
 }
 
-//-(void)setupButtons {
-//    self.paletteButton = [[UIButton alloc] initWithFrame:CGRectMake(20, 454, 163, 32)];
-//    self.drawButton = [[OpenButton alloc] initWithFrame:CGRectMake(243, 454, 91, 32)];
- //   self.timerButton = [[OpenButton alloc] initWithFrame:CGRectMake(20, 506, 151, 32)];
-//    self.shareButton = [[OpenButton alloc] initWithFrame:CGRectMake(239, 506, 95, 32)];
-//}
-
 - (IBAction)timerButtonPressed:(id)sender {
     if (self.timerViewController == nil) {
         self.timerViewController = [TimerViewController new];
@@ -93,12 +88,22 @@ typedef enum {
     if ([self.drawButton.currentTitle isEqualToString:@"Reset"]) {
         [self updateScreenState:idle];
     } else {
-        [self.canvasView drawPattern:self.pattern time:self.time colors:self.colors];
         [self updateScreenState:draw];
+        [self.canvasView drawPattern:self.pattern time:self.time colors:self.colors];
     }
 }
 
 - (IBAction)shareButtonPressed:(id)sender {
+    UIGraphicsBeginImageContext(self.canvasView.bounds.size);
+    [self.canvasView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *drawing = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    NSData *pngData = UIImagePNGRepresentation(drawing);    
+    
+    UIActivityViewController *activityViewControntroller = [[UIActivityViewController alloc] initWithActivityItems:@[pngData] applicationActivities:nil];
+    activityViewControntroller.popoverPresentationController.sourceView = self.canvasView;
+    [self presentViewController:activityViewControntroller animated:YES completion:nil];
     
 }
 
@@ -106,13 +111,12 @@ typedef enum {
     view.layer.cornerRadius = 8;
     view.layer.borderColor = [UIColor colorChillSky].CGColor;
     view.layer.masksToBounds = NO;
-    view.layer.shadowOffset = CGSizeMake(0, 0);
+    view.layer.shadowOffset = CGSizeZero;
     view.layer.shadowRadius = 4;
     view.layer.shadowOpacity = 1.0;
 }
 
 -(void)setupNavigationItems {
-    [UIBarButtonItem appearance].tintColor = [UIColor colorLightGreenSea];
     self.navigationController.navigationBar.tintColor = [UIColor colorLightGreenSea];
     self.navigationItem.title = @"Artist";
     UIBarButtonItem *drawings = [[UIBarButtonItem alloc] initWithTitle:@"Drawings"
@@ -125,16 +129,25 @@ typedef enum {
                                     NSForegroundColorAttributeName: [UIColor colorLightGreenSea],
                                     NSFontAttributeName: [UIFont fontWithName:@"Montserrat-Regular" size:17.0]
                                  };
-    [[UIBarItem appearance] setTitleTextAttributes:attributes forState: UIControlStateNormal];
+    NSDictionary *titleAttributes = @{
+                                    NSFontAttributeName: [UIFont fontWithName:@"Montserrat-Regular" size:17.0]
+                                 };
     [self.navigationItem.rightBarButtonItem setTitleTextAttributes:attributes forState: UIControlStateNormal];
+    [self.navigationItem.rightBarButtonItem setTitleTextAttributes:attributes forState: UIControlStateHighlighted];
     [self.navigationItem.leftBarButtonItem setTitleTextAttributes:attributes forState: UIControlStateNormal];
+    [self.navigationItem.leftBarButtonItem setTitleTextAttributes:attributes forState: UIControlStateHighlighted];
+    
+    [self.navigationController.navigationBar setTranslucent:NO];
+    [self.navigationController.navigationBar setBarTintColor:[UIColor whiteColor]];
+    [self.navigationController.navigationBar setTitleTextAttributes:titleAttributes];
 }
 
 - (void)nextTapped:(id)sender {
     if (self.drawingsViewController == nil) {
-        self.drawingsViewController = [[DrawingsViewController alloc] initWithNibName:@"DrawingsViewController" bundle:nil];;
+        self.drawingsViewController = [DrawingsViewController new];;
         self.drawingsViewController.delegate = self;
     }
+    
     [self.navigationController pushViewController:self.drawingsViewController animated:YES];
 }
 
@@ -154,7 +167,7 @@ typedef enum {
             [self.drawButton setTitle:@"Draw" forState:UIControlStateNormal];
             self.shareButton.alpha = 0.5;
             [self.shareButton setUserInteractionEnabled:NO];
-            //self.canvasView
+            [self.canvasView.layer.sublayers makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
             break;
         case draw:
             [self.paletteButton setUserInteractionEnabled:NO];
@@ -181,7 +194,7 @@ typedef enum {
     if (CGRectIsEmpty(mainViewRect)) {
         return CGRectZero;
     } else {
-        return CGRectMake( 0, mainViewRect.size.height / 2, mainViewRect.size.width, mainViewRect.size.height / 2);
+        return CGRectMake(0, mainViewRect.size.height / 2, mainViewRect.size.width, mainViewRect.size.height / 2);
     }
 }
 
@@ -197,8 +210,9 @@ typedef enum {
     self.time = time;
 }
 
-- (void)setImagePattern:(int)pattern {
+- (void)setImagePattern:(NSInteger)pattern {
     self.pattern = pattern;
 }
+
 
 @end

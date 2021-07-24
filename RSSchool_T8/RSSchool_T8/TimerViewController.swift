@@ -57,6 +57,7 @@ class TimerViewController: UIViewController {
         self.view.layer.shadowRadius = 4.0
         self.view.layer.shadowOffset = CGSize.zero;
         self.view.layer.shadowOpacity = 1.0
+        self.view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
     }
     
     @objc func setupButton() {
@@ -77,5 +78,6 @@ class TimerViewController: UIViewController {
         currentValueLabel.font = UIFont(name: "Montserrat-Regular", size: 18.0);
         currentValueLabel.text = String(format: "%.02f s", sender.value);
         currentValueLabel.textAlignment = .center;
+        currentValue = sender.value
     }
 }
