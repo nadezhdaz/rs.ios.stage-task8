@@ -84,6 +84,7 @@ typedef enum {
     self.timerViewController.view.frame = [self frameForChildController];
     [self.timerViewController didMoveToParentViewController:self];
 }
+
 - (IBAction)drawButtonPressed:(id)sender {
     if ([self.drawButton.currentTitle isEqualToString:@"Reset"]) {
         [self updateScreenState:idle];

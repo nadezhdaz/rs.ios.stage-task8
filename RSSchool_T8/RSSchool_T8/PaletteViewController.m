@@ -14,7 +14,6 @@
 
 @property (nonatomic, strong) NSMutableArray<ColorButton*> * colorsToDrawArray;
 @property (nonatomic, strong) NSTimer *timer;
-//@property (nonatomic, weak) CanvasView *canvasView;
 
 @end
 
